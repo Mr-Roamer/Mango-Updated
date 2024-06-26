@@ -1,49 +1,45 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Register = () => {
-
-  const navigate = useNavigate()
+const RegisterClient = () => {
+  const navigate = useNavigate();
 
   const [Data, handleData] = useState({
-    name:'',
-    username:'',
-    email:'',
-    password:'',
-    skills:[]
-  })
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
 
-  const handleSkill = (e) => {
-     const ski = e.target.value.split(',');
-     handleData({...Data,[e.target.id]:ski});
-  }
+  
+  const handleClick = async (e) => {
+    e.preventDefault();
 
-   const handleClick = async (e) => {
-     e.preventDefault();
+    try {
+      console.log("hi");
+      const response = await fetch("http://localhost:5000/signupclient", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Data), //send syntax
+      });
 
-     try {
-       console.log("hi");
-       const response = await fetch("http://localhost:5000/signup", {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify(Data), //send syntax
-       });
+      const data = await response.json();
+      if (!response.flag) {
+        alert(data.message);
+        navigate("/login"); //navigate to login page
+      } else {
+        navigate("../signupclient");
+        alert(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Could not submit data");
+    }
+  };
 
-       const data = await response.json();
-       if (!response.flag) {
-         alert(data.message);
-         navigate("/login");//navigate to login page
-       } 
-       else {
-         alert(data.message);
-       }
-     } catch (error) {
-       console.log(error);
-       alert("Could not submit data");
-     }
-   };
+
 
   return (
     <div className="h-screen bg-white-900 flex justify-center items-center">
@@ -82,12 +78,12 @@ const Register = () => {
             Email *
           </label>
           <input
-            type="email"
+            type="text"
             id="email"
             onChange={(e) =>
               handleData({ ...Data, [e.target.id]: e.target.value })
             }
-            className="rounded-md w-full p-2 bg-gray-300 text-black"
+            className="rounded-md  w-full p-2 bg-gray-300 text-black"
           />
         </div>
         <div className="mb-4">
@@ -100,18 +96,6 @@ const Register = () => {
             onChange={(e) =>
               handleData({ ...Data, [e.target.id]: e.target.value })
             }
-            className="rounded-md  w-full p-2 bg-gray-300 text-black"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="Skills" className="block text-white mb-2">
-            Skills (optional)
-          </label>
-          <input
-            type="text"
-            id="skills"
-            onChange={handleSkill}
             className="rounded-md  w-full p-2 bg-gray-300 text-black"
           />
         </div>
@@ -137,4 +121,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterClient;
